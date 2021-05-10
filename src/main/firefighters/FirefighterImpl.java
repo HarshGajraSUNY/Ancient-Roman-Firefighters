@@ -1,5 +1,9 @@
 package main.firefighters;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
+import main.api.Building;
 import main.api.CityNode;
 import main.api.Firefighter;
 import main.api.exceptions.NotImplementedException;
@@ -9,10 +13,11 @@ public class FirefighterImpl implements Firefighter {
   private CityNode location;
   public int distanceTraveled ;
   boolean [][]visited ;
-  
+  private Queue<Building> assignedBuildings ;
+  public int name;
   public FirefighterImpl() {
 	  distanceTraveled=0;
-	 
+	  assignedBuildings = new LinkedList<Building>();
 }
 
 @Override

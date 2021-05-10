@@ -1,6 +1,7 @@
 package main.firefighters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -21,15 +22,16 @@ public class FireDispatchImpl implements FireDispatch {
   List<Firefighter> fireFightersHired ;
   City city;	
   Queue<BuildingQueue> queue;
-  
+  HashMap<CityNode,Firefighter> buildingFireFighterMap;
+  Queue<FirefighterImpl> schedulingQueueFireFighters ;
   
   public FireDispatchImpl(City city) {
     // TODO
 	this.city =city;
 	fireFightersHired = new ArrayList<Firefighter>();
 	queue= new LinkedList<BuildingQueue>();
-	
-	
+	schedulingQueueFireFighters= new LinkedList<FirefighterImpl>();
+	buildingFireFighterMap = new HashMap<CityNode, Firefighter>();
   //  throw new NotImplementedException();
   }
 
@@ -42,8 +44,13 @@ public class FireDispatchImpl implements FireDispatch {
 		  firefighter.setLocation(city.getFireStation().getLocation());
 		  visited = new boolean[city.getXDimension()][city.getYDimension()];
 		  firefighter.setVisited(visited);
+		  firefighter.name =i;
 		  fireFightersHired.add(firefighter);
+		  schedulingQueueFireFighters.add(firefighter);
+		  
 	  }
+	  
+	
 	 
   }
 
@@ -61,16 +68,45 @@ public class FireDispatchImpl implements FireDispatch {
     return fireFightersHired;
   }
 
+  //scheduling algorithm for firefighters to burnedBuildings
+  public void schedulingFireFighters(CityNode... burningBuildings) {
+	  
+	  int div = burningBuildings.length/fireFightersHired.size();
+	  
+	  int buildingIndex =0;
+	   
+	  while(buildingIndex<=burningBuildings.length-1) {
+		  
+		  FirefighterImpl fireImpl = schedulingQueueFireFighters.poll();
+		  int count =0;
+		  while(count<div) {
+			  
+			  //assign firefighter to buidling
+			 buildingFireFighterMap.put(burningBuildings[buildingIndex] , fireImpl);
+			 buildingIndex++; 
+			 count++;
+		  }
+		
+		  schedulingQueueFireFighters.add(fireImpl);
+	  }
+	  
+  }
+  
+  //scheduling firefighters + BFS implementation 
   @Override
   public void dispatchFirefighers(CityNode... burningBuildings)  {
     // TODO
+	 
+	  //if there are more then 1 firefighters then run the scheduling algorithm.
 	if(getFirefighters().size()>1) {
 	   
+		schedulingFireFighters(burningBuildings);
+		
 		for(int k=0;k<burningBuildings.length;k++) {
 			
-			FirefighterImpl firefighterImpl = (FirefighterImpl) getFirefighters().get(k);
+		//	FirefighterImpl firefighterImpl = (FirefighterImpl) getFirefighters().get(k);
 			
-			
+			FirefighterImpl firefighterImpl =(FirefighterImpl) buildingFireFighterMap.get(burningBuildings[k]);
 			try {
 				queue.clear();
 				FirefighterImpl firefighterReturn =dispatchExtinguish(burningBuildings[k],firefighterImpl) ;
