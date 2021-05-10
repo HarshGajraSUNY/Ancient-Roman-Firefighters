@@ -36,10 +36,11 @@ public class FireDispatchImpl implements FireDispatch {
   @Override
   public void setFirefighters(int numFirefighters) {
     // TODO
-	  boolean visited[][] = new boolean[city.getXDimension()][city.getYDimension()];
+	  boolean visited[][] ;
 	  for(int i=0;i<numFirefighters;i++) {
 		  FirefighterImpl firefighter = new FirefighterImpl();
 		  firefighter.setLocation(city.getFireStation().getLocation());
+		  visited = new boolean[city.getXDimension()][city.getYDimension()];
 		  firefighter.setVisited(visited);
 		  fireFightersHired.add(firefighter);
 	  }
@@ -64,26 +65,24 @@ public class FireDispatchImpl implements FireDispatch {
   public void dispatchFirefighers(CityNode... burningBuildings)  {
     // TODO
 	if(getFirefighters().size()>1) {
-	  
-		int count = getFirefighters().size();
-		int j=0;
-		while(count>0) {
-			FirefighterImpl firefighterImpl = (FirefighterImpl) getFirefighters().get(j);
+	   
+		for(int k=0;k<burningBuildings.length;k++) {
+			
+			FirefighterImpl firefighterImpl = (FirefighterImpl) getFirefighters().get(k);
 			
 			
-				  try {
-					  FirefighterImpl  firefighterReturn=dispatchExtinguish(burningBuildings[j],firefighterImpl) ;
-					  fireFightersHired.set(j, firefighterReturn);
-				} catch (NoFireFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				    
-			  
+			try {
+				queue.clear();
+				FirefighterImpl firefighterReturn =dispatchExtinguish(burningBuildings[k],firefighterImpl) ;
+				fireFightersHired.set(k, firefighterReturn);
+			} catch (NoFireFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-			count--;
-			j++;
 		}
+		
+	
 		
    }else {
 	
@@ -91,6 +90,7 @@ public class FireDispatchImpl implements FireDispatch {
 	  
 	   for(int i=0;i<burningBuildings.length;i++) {
 		   try {
+			
 			firefighterImpl =dispatchExtinguish(burningBuildings[i],firefighterImpl) ;
 			
 		   } catch (NoFireFoundException e) {
@@ -103,6 +103,7 @@ public class FireDispatchImpl implements FireDispatch {
    }
  }
   
+  //BFS implementation
   public FirefighterImpl dispatchExtinguish(CityNode cityNode, FirefighterImpl firefighterImpl) throws NoFireFoundException {
 	   
 	   //queue.clear();

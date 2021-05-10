@@ -111,7 +111,7 @@ public class BasicScenarios {
       }
     }
 
-   // Assert.assertEquals(2, totalDistanceTraveled);
+    Assert.assertEquals(2, totalDistanceTraveled);
     Assert.assertTrue(firefighterPresentAtFireOne);
     Assert.assertTrue(firefighterPresentAtFireTwo);
     Assert.assertFalse(basicCity.getBuilding(fireNodes[0]).isBurning());
