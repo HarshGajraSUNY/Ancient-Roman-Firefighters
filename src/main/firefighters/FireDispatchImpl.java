@@ -21,14 +21,14 @@ public class FireDispatchImpl implements FireDispatch {
   List<Firefighter> fireFightersHired ;
   City city;	
   Queue<BuildingQueue> queue;
-  boolean [][]visited ;
+  
   
   public FireDispatchImpl(City city) {
     // TODO
 	this.city =city;
 	fireFightersHired = new ArrayList<Firefighter>();
 	queue= new LinkedList<BuildingQueue>();
-	visited = new boolean[city.getXDimension()][city.getYDimension()];
+	
 	
   //  throw new NotImplementedException();
   }
@@ -36,15 +36,17 @@ public class FireDispatchImpl implements FireDispatch {
   @Override
   public void setFirefighters(int numFirefighters) {
     // TODO
+	  boolean visited[][] = new boolean[city.getXDimension()][city.getYDimension()];
 	  for(int i=0;i<numFirefighters;i++) {
 		  FirefighterImpl firefighter = new FirefighterImpl();
 		  firefighter.setLocation(city.getFireStation().getLocation());
+		  firefighter.setVisited(visited);
 		  fireFightersHired.add(firefighter);
 	  }
 	 
   }
 
-  private boolean validateCoordinate(int xCoordinate, int yCoordinate) {
+  private boolean validateCoordinate(int xCoordinate, int yCoordinate,boolean[][] visited) {
 	    if (xCoordinate < 0 || yCoordinate < 0 || xCoordinate >= city.getXDimension()||
 	        yCoordinate >= city.getYDimension() || visited[xCoordinate][yCoordinate]==true) {
 	      return false;
@@ -68,16 +70,16 @@ public class FireDispatchImpl implements FireDispatch {
 		while(count>0) {
 			FirefighterImpl firefighterImpl = (FirefighterImpl) getFirefighters().get(j);
 			
-			for(int i=0;i<burningBuildings.length;i++) {
+			
 				  try {
-					  FirefighterImpl  firefighterReturn=dispatchExtinguish(burningBuildings[i],firefighterImpl) ;
+					  FirefighterImpl  firefighterReturn=dispatchExtinguish(burningBuildings[j],firefighterImpl) ;
 					  fireFightersHired.set(j, firefighterReturn);
 				} catch (NoFireFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				    
-			   }
+			  
 			
 			count--;
 			j++;
@@ -103,12 +105,15 @@ public class FireDispatchImpl implements FireDispatch {
   
   public FirefighterImpl dispatchExtinguish(CityNode cityNode, FirefighterImpl firefighterImpl) throws NoFireFoundException {
 	   
-	  
+	   //queue.clear();
 	   Building burningBuilding = city.getBuilding(cityNode);
 	   Building fireStation = city.getFireStation();
 	   queue.add(new BuildingQueue(city.getBuilding(firefighterImpl.getLocation()), 0));
+	   boolean[][] visited = firefighterImpl.getVisited();
 	   visited[firefighterImpl.getLocation().getX()][firefighterImpl.getLocation().getY()] = true;
+	   firefighterImpl.setVisited(visited);
 	   int distance =0;
+	   
 	   while(!queue.isEmpty()) {
 		   
 		   BuildingQueue buildingQueuePop = queue.poll();
@@ -131,33 +136,41 @@ public class FireDispatchImpl implements FireDispatch {
 		   }
 		   
 		   //go up
-		   if(validateCoordinate(building.getLocation().getX()-1, building.getLocation().getY())) {
+		   if(validateCoordinate(building.getLocation().getX()-1, building.getLocation().getY(),visited)) {
 			   
 			   Building buildingUp =city.getBuilding(building.getLocation().getX()-1, building.getLocation().getY());
 			   queue.add(new BuildingQueue(buildingUp, distance+1)) ;
+			   
 			   visited[buildingUp.getLocation().getX()][buildingUp.getLocation().getY()]=true;
+			   firefighterImpl.setVisited(visited);
 		   }
 		   
 		   //go down
-		   if(validateCoordinate(building.getLocation().getX()+1, building.getLocation().getY())) {
+		   if(validateCoordinate(building.getLocation().getX()+1, building.getLocation().getY(),visited)) {
 			   Building buildingDown=city.getBuilding(building.getLocation().getX()+1, building.getLocation().getY()) ;
 			   queue.add(new BuildingQueue(buildingDown, distance+1));
+			   
 			   visited[buildingDown.getLocation().getX()][buildingDown.getLocation().getY()]=true;
+			   firefighterImpl.setVisited(visited);
 		   }
 		   
 		   //go left
-		   if(validateCoordinate(building.getLocation().getX(), building.getLocation().getY()-1)) {
+		   if(validateCoordinate(building.getLocation().getX(), building.getLocation().getY()-1,visited)) {
 			   Building buildingLeft =city.getBuilding(building.getLocation().getX(), building.getLocation().getY()-1) ;
 			   queue.add(new BuildingQueue(buildingLeft, distance+1));
+			   
 			   visited[buildingLeft.getLocation().getX()][buildingLeft.getLocation().getY()]=true;
+			   firefighterImpl.setVisited(visited);
 		   }
 		   
 		   //go right
 		   
-		   if(validateCoordinate(building.getLocation().getX(), building.getLocation().getY()+1)) {
+		   if(validateCoordinate(building.getLocation().getX(), building.getLocation().getY()+1,visited)) {
 			   Building buildingRight = city.getBuilding(building.getLocation().getX(), building.getLocation().getY()+1);
 			   queue.add(new BuildingQueue(buildingRight, distance+1) );
+			  
 			   visited[buildingRight.getLocation().getX()][buildingRight.getLocation().getY()]=true;
+			   firefighterImpl.setVisited(visited);
 		   }
 	   }
 	   

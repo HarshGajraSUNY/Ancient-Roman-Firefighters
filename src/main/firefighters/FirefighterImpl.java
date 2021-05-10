@@ -3,14 +3,16 @@ package main.firefighters;
 import main.api.CityNode;
 import main.api.Firefighter;
 import main.api.exceptions.NotImplementedException;
+import main.impls.CityImpl;
 
 public class FirefighterImpl implements Firefighter {
   private CityNode location;
   public int distanceTraveled ;
-	
+  boolean [][]visited ;
   
   public FirefighterImpl() {
 	  distanceTraveled=0;
+	 
 }
 
 @Override
@@ -30,5 +32,13 @@ public class FirefighterImpl implements Firefighter {
 	  this.location=cityNode;
 	  
   }
+
+public boolean[][] getVisited() {
+	return visited;
+}
+
+public void setVisited(boolean[][] visited) {
+	this.visited = visited;
+}
   
 }

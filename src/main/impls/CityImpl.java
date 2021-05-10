@@ -11,7 +11,7 @@ public class CityImpl implements main.api.City {
   private final FireStation fireStation;
   private final Building[][] buildingGrid;
   private FireDispatch fireDispatch;
-
+  
   public CityImpl(int xDimension, int yDimension, CityNode fireStationLocation) {
     validateCityDimensions(xDimension, yDimension);
     this.fireStation = new FireStation(fireStationLocation);
