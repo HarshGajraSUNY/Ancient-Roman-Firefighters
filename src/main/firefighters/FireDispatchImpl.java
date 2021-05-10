@@ -81,7 +81,7 @@ public class FireDispatchImpl implements FireDispatch {
 		  int count =0;
 		  while(count<div) {
 			  
-			  //assign firefighter to buidling
+			  //assign firefighter to building
 			 buildingFireFighterMap.put(burningBuildings[buildingIndex] , fireImpl);
 			 buildingIndex++; 
 			 count++;
